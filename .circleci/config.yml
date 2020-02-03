@@ -1,0 +1,33 @@
+version: 2
+jobs:
+  build:
+    branches:
+      only:
+        - master
+    docker:
+      - image: circleci/node:9.11.1
+
+    working_directory: ~/repo
+
+    steps:
+      - checkout
+
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "functions/package.json" }}
+          - v1-dependencies-
+
+      - run: cd functions && npm install
+
+      - run:
+          name: 'Install Dependecies'
+          command: npm install --save-dev firebase-tools
+
+      - save_cache:
+          paths:
+            - functions/node_modules
+          key: v1-dependencies-{{ checksum "functions/package.json" }}
+
+      - run:
+          name: 'Deploy to Firebase'
+          command: node_modules/.bin/firebase deploy --project "$FIREBASE_PJ" --token "$FIREBASE_TOKEN"
