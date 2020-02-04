@@ -15,7 +15,8 @@
   "dependencies": {
     "firebase-admin": "^8.9.2",
     "firebase-functions": "^3.3.0",
-    "slack": "^11.0.2"
+    "slack": "^11.0.2",
+    "request": "^2.88.0"
   },
   "devDependencies": {
     "eslint": "^5.12.0",
