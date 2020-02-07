@@ -30,7 +30,7 @@ jobs:
 
       - run:
           name: 'set .firebaserc'
-          command: echo -e "{\n  {\n    \"projects\": {\n        \"default\": \"$FIREBASE_PJ\"\n  }\n}" > .firebaserc
+          command: echo -e "{\n  {\n    \"projects\":{\n        \"default\":\"$FIREBASE_PJ\"\n  }\n}" > .firebaserc
 
       - run:
           name: 'Deploy to Firebase'
