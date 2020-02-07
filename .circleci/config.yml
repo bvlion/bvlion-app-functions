@@ -30,4 +30,4 @@ jobs:
 
       - run:
           name: 'Deploy to Firebase'
-          command: node_modules/.bin/firebase deploy --project "$FIREBASE_PJ" --token "$FIREBASE_TOKEN"
+          command: node_modules/.bin/firebase deploy --only functions --project "$FIREBASE_PJ" --token "$FIREBASE_TOKEN"

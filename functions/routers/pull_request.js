@@ -1,5 +1,6 @@
 module.exports = (functions, admin, _, request) => functions.https.onRequest((req, res) => {
-  const payload = JSON.parse(req.body.payload)
+  console.log(req.body)
+  const payload = JSON.parse(req.body)
   console.log(payload)
   admin.database().ref('/function').once("value", (snapshot) => {
     const element = snapshot.val()
