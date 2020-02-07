@@ -1,6 +1,6 @@
 module.exports = (functions, admin, slack, request) => functions.https.onRequest((req, res) => {
   const payload = JSON.parse(req.body.payload)
-  admin.database().ref('/function').on("value", (snapshot) => {
+  admin.database().ref('/function').once("value", (snapshot) => {
     const element = snapshot.val()
 
     if (payload.actions[0].name === 'Cancel') {
@@ -9,7 +9,7 @@ module.exports = (functions, admin, slack, request) => functions.https.onRequest
     }
 
     const ref = admin.database().ref('/function/GitHub/' + payload.actions[0].name)
-    ref.on("value", (snapshot2) => {
+    ref.once("value", (snapshot2) => {
       const github = snapshot2.val()
       const versions = github.version.split('.')
       let next_version = ''
@@ -25,9 +25,10 @@ module.exports = (functions, admin, slack, request) => functions.https.onRequest
       if (payload.actions[0].value === 'Deploy') {
         const github_promise = new Promise((resolve, reject) => {
           request.post({
-            uri: 'https://api.github.com/repos/bvlion/' + github.name + '/releases',
+            uri: 'https://api.github.com/repos/' + element.user + '/' + github.name + '/releases',
             headers: {
-              'Authorization': 'token ' + element.token.github
+              'Authorization': 'token ' + element.token.github,
+              'User-Agent': 'Cloud Functions for Firebase'
             },
             json: {
               tag_name: 'v' + next_version,
@@ -40,13 +41,14 @@ module.exports = (functions, admin, slack, request) => functions.https.onRequest
               reject(error)
               return
             }
-            resolve(response)
+            console.log(response)
+            resolve()
           })
         })
 
         const circleci_promise = new Promise((resolve, reject) => { 
           request.post({
-            uri: 'https://circleci.com/api/v2/project/github/bvlion/' + github.name + '/pipeline',
+            uri: 'https://circleci.com/api/v2/project/github/' + element.user + '/' + github.name + '/pipeline',
             json: {
               tag: 'v' + next_version,
               parameters: {
@@ -62,30 +64,33 @@ module.exports = (functions, admin, slack, request) => functions.https.onRequest
               reject(error)
               return
             }
-            resolve(response)
+            console.log(response)
+            resolve()
           })
         })
 
-        const update_promise = new Promise((resolve, _) => { 
+        const slack_rdb_update_promise = new Promise((resolve, _) => { 
           ref.update({version: next_version})
+          slack.chat.update({
+            token: element.token.slack,
+            channel: payload.channel.id,
+            text: payload.actions[0].name + ' の v' + next_version + ' の Deploy を実行しています (*･ω･)ﾉ',
+            ts: payload.message_ts,
+          }).then(console.log).catch(console.error)
           resolve()
         })
 
-        Promise.all([github_promise, circleci_promise, update_promise])
-          .then((message) => {
-            message.forEach(console.log)
-            slack.chat.update({
-              token: element.token.slack,
-              channel: payload.channel.id,
-              text: payload.actions[0].name + ' の v' + next_version + ' の Deploy を実行しています (*･ω･)ﾉ',
-              ts: payload.message_ts,
-            }).then(console.log).catch(console.error)
-            return res.status(200).end()
-          }).catch((error) =>{
+        Promise.resolve()
+          .then(github_promise)
+          .then(circleci_promise)
+          .then(slack_rdb_update_promise)
+          .then(res.status(200).end())
+          .catch((error) => {
             console.error(error)
             return res.status(500).end()
           })
-        return
+
+        return 
       }
 
       slack.chat.update({

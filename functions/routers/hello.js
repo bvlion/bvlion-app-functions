@@ -1,6 +1,6 @@
 module.exports = (functions, admin, slack, _) => functions.https.onRequest((req, res) => {
   const payload = req.body
-  admin.database().ref('/function').on("value", (snapshot) => {
+  admin.database().ref('/function').once("value", (snapshot) => {
     const element = snapshot.val()
     
     if (element.target_channel !== payload.event.channel) {
