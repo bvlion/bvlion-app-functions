@@ -4,6 +4,11 @@ module.exports = (functions, admin, slack, _) => functions.https.onRequest((req,
     const element = snapshot.val()
     
     if (element.target_channel !== payload.event.channel) {
+      slack.chat.postMessage({
+        token: element.token.slack,
+        channel: payload.event.channel,
+        text: element.message.channel
+      }).then(console.log).catch(console.error)
       res.status(200).end()
       return // 対象のチャンネルでなければ終了
     }
