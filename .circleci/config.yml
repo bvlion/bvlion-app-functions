@@ -5,7 +5,7 @@ jobs:
       only:
         - master
     docker:
-      - image: circleci/node:chakracore-10.13.0
+      - image: circleci/node:13.7.0
 
     working_directory: ~/repo
 
@@ -27,6 +27,10 @@ jobs:
           paths:
             - functions/node_modules
           key: v1-dependencies-{{ checksum "functions/package.json" }}
+
+      - run:
+          name: 'set .firebaserc'
+          command: echo -e "{\n  {\n    \"projects\": {\n        \"default\": \"$FIREBASE_PJ\"\n  }\n}" > .firebaserc
 
       - run:
           name: 'Deploy to Firebase'
