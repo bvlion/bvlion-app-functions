@@ -20,8 +20,8 @@ jobs:
       - run: cd functions && npm install
 
       - run:
-          name: 'Install Dependecies'
-          command: npm install --save-dev firebase-tools
+          name: 'Install firebase-tools'
+          command: npm install
 
       - save_cache:
           paths:

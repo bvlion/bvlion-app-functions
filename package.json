@@ -1,0 +1,11 @@
+{
+  "name": "firebase-tools",
+  "description": "save firebase-tools",
+  "engines": {
+    "node": "10"
+  },
+  "devDependencies": {
+    "firebase-tools": "^7.12.1"
+  },
+  "private": true
+}
