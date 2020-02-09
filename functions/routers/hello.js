@@ -8,7 +8,7 @@ module.exports = (functions, admin, slack, _) => functions.https.onRequest((req,
   admin.database().ref('/function').once("value", (snapshot) => {
     const element = snapshot.val()
 
-    if (!payload.event.team_id !== element.team) {
+    if (payload.event.team !== element.team) {
       res.redirect('/a')
       return
     }

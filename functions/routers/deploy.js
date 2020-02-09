@@ -1,14 +1,21 @@
 module.exports = (functions, admin, slack, request) => functions.https.onRequest((req, res) => {
-  if (!res.body || !res.body.payload) {
+  let payload = null
+  try {
+    payload = JSON.parse(req.body.payload)
+  } catch (_) {
     res.redirect('/a')
     return
   }
 
-  const payload = JSON.parse(req.body.payload)
+  if (!payload) {
+    res.redirect('/a')
+    return
+  }
+
   admin.database().ref('/function').once("value", (snapshot) => {
     const element = snapshot.val()
 
-    if (!payload.team.id !== element.team) {
+    if (payload.team.id !== element.team) {
       res.redirect('/a')
       return
     }
