@@ -1,3 +1,5 @@
+const crypto = require('crypto')
+
 module.exports = (functions, admin, _, request) => functions.https.onRequest((req, res) => {
   const payload = req.body
   admin.database().ref('/function').once("value", (snapshot) => {
