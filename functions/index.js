@@ -10,7 +10,6 @@ const funcs = [
   'hello',
   'deploy',
   'pull_request',
-  'version'
 ]
 
 funcs
