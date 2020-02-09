@@ -69,7 +69,8 @@ module.exports = (functions, admin, slack, request) => functions.https.onRequest
             json: {
               tag: 'v' + next_version,
               parameters: {
-                run_build: true
+                run_build: true,
+                version: 'v' + next_version,
               }
             },
             auth: {
