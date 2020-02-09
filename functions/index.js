@@ -9,7 +9,8 @@ const funcs = [
   'test',
   'hello',
   'deploy',
-  'pull_request'
+  'pull_request',
+  'version'
 ]
 
 funcs

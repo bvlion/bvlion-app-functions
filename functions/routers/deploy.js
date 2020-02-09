@@ -1,7 +1,17 @@
 module.exports = (functions, admin, slack, request) => functions.https.onRequest((req, res) => {
+  if (!res.body || !res.body.payload) {
+    res.redirect('/a')
+    return
+  }
+
   const payload = JSON.parse(req.body.payload)
   admin.database().ref('/function').once("value", (snapshot) => {
     const element = snapshot.val()
+
+    if (!payload.team.id !== element.team) {
+      res.redirect('/a')
+      return
+    }
 
     if (payload.actions[0].name === 'Cancel') {
       res.status(200).json({text: element.message.cancel})
@@ -69,27 +79,15 @@ module.exports = (functions, admin, slack, request) => functions.https.onRequest
           })
         })
 
-        const slack_rdb_update_promise = new Promise((resolve, _) => { 
-          ref.update({version: next_version})
-          slack.chat.update({
-            token: element.token.slack,
-            channel: payload.channel.id,
-            text: payload.actions[0].name + ' の v' + next_version + ' の Deploy を実行しています (*･ω･)ﾉ',
-            ts: payload.message_ts,
-          }).then(console.log).catch(console.error)
-          resolve()
-        })
-
         Promise.resolve()
           .then(github_promise)
           .then(circleci_promise)
-          .then(slack_rdb_update_promise)
-          .then(res.status(200).end())
+          .then(ref.update({version: next_version}))
+          .then(res.status(200).json({text: payload.actions[0].name + ' の v' + next_version + ' の Deploy を実行しています (*･ω･)ﾉ'}))
           .catch((error) => {
             console.error(error)
             return res.status(500).end()
           })
-
         return 
       }
 
@@ -98,26 +96,26 @@ module.exports = (functions, admin, slack, request) => functions.https.onRequest
         channel: payload.channel.id,
         text: payload.actions[0].name + ' の v' + next_version + ' を Deploy します (*･ω･)ﾉ',
         ts: payload.message_ts,
-        color: "#3AA3E3",
         attachments: [{
-            callback_id: 'deploy_button',
-            text: '',
-            actions: [
-              {
-                type: 'button',
-                text: 'Deploy',
-                name: payload.actions[0].name,
-                value: 'Deploy',
-                style: 'primary'
-              },
-              {
-                type: 'button',
-                text: 'Cancel',
-                name: 'Cancel',
-                value: 'Cancel',
-                style: 'danger'
-              }
-            ]
+          color: "#3AA3E3",
+          callback_id: 'deploy_button',
+          text: '',
+          actions: [
+            {
+              type: 'button',
+              text: 'Deploy',
+              name: payload.actions[0].name,
+              value: 'Deploy',
+              style: 'primary'
+            },
+            {
+              type: 'button',
+              text: 'Cancel',
+              name: 'Cancel',
+              value: 'Cancel',
+              style: 'danger'
+            }
+          ]
         }]
       }).then(console.log).catch(console.error)
       res.status(200).end()
