@@ -11,7 +11,7 @@ module.exports = (functions, admin, _, request) => functions.https.onRequest((re
     res.status(403).end()
     return
   }
-  admin.database().ref('/vsrsion').once("value", (snapshot) => {
+  admin.database().ref('/version').once("value", (snapshot) => {
     request({
       uri: snapshot.val().url + app_name,
       followAllRedirects: true,
