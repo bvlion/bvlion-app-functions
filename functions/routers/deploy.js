@@ -87,16 +87,8 @@ module.exports = (functions, admin, slack, request) => functions.https.onRequest
           })
         })
 
-        Promise.resolve()
-          .then(github_promise)
-          .then(circleci_promise)
-          .then(ref.update({version: next_version}))
-          .then(res.status(200).json({text: payload.actions[0].name + ' の v' + next_version + ' の Deploy を実行しています (*･ω･)ﾉ'}))
-          .catch((error) => {
-            console.error(error)
-            return res.status(500).end()
-          })
-        return 
+        promises([github_promise, circleci_promise, ref.update({version: next_version})])
+        return res.status(200).json({text: payload.actions[0].name + ' の v' + next_version + ' の Deploy を実行しています (*･ω･)ﾉ'})
       }
 
       slack.chat.update({
@@ -130,3 +122,7 @@ module.exports = (functions, admin, slack, request) => functions.https.onRequest
     })
   })
 })
+
+async function promises(functions) {
+  functions.forEach(async (func) => await func)
+}
