@@ -70,7 +70,7 @@ module.exports = (functions, admin, slack, request) => functions.https.onRequest
               tag: 'v' + next_version,
               parameters: {
                 run_build: true,
-                version: 'v' + next_version,
+                version: 'v' + next_version.replace(/\./g, '-'),
               }
             },
             auth: {
