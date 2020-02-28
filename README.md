@@ -6,7 +6,8 @@ body をそのまま返す
 
 ## /hello
 
-メンションかつ特定チャンネルの場合にデプロイ対象のアプリ名ボタンを表示する
+メンションかつ特定チャンネルの場合にデプロイ対象のアプリ名ボタンを表示する  
+https://api.slack.com/apps
 
 ## /deploy
 
@@ -19,10 +20,40 @@ body をそのまま返す
 
 GitHub からの Webhook に反応して CircleCI の API を叩く
 
-## /version
-
-/version/{app\_name} で対象アプリのバージョンを返す
-
 # RTDB 構成
 
-後で書く
+```
+{
+  "function" : {
+    "GitHub" : {
+      "branch-name" : {
+        "branch" : "master",
+        "name" : "BranchName",
+        "version" : "1.0.0"
+      },
+      "secret" : "secret"
+    },
+    "actions" : [ "branch-name" ],
+    "message" : {
+      "cancel" : "Deploy is canceled.",
+      "channel" : "Can use #channel only.",
+      "deploy" : "Deploy ??",
+      "error" : "keyword not seted."
+    },
+    "target_channel" : "xxxxxxxxx",
+    "team" : "xxxxxxxxx",
+    "token" : {
+      "circleci" : "circle_ci_secret",
+      "github" : "github_secret",
+      "slack" : "xoxb-slack_secret"
+    },
+    "user" : "user"
+  }
+}
+```
+
+# コメント
+
+* Cloud Functions For Firebase から外部へ接続するには有料プランにする必要があります。
+* GitHub のプルリクへの反応と、Slack からのデプロイができないかと思い作りました。
+* Circle CI と連携しており、2.1 行こうの orbs を利用するとパラメータを受け取れてよいかと感じております。
