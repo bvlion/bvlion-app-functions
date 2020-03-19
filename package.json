@@ -5,7 +5,8 @@
     "node": "10"
   },
   "devDependencies": {
-    "firebase-tools": "^7.12.1"
+    "firebase-tools": "^7.12.1",
+    "minimist": ">=1.2.2"
   },
   "private": true
 }
