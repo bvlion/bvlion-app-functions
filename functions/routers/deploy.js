@@ -63,31 +63,7 @@ module.exports = (functions, admin, slack, request) => functions.https.onRequest
           })
         })
 
-        const circleci_promise = new Promise((resolve, reject) => { 
-          request.post({
-            uri: 'https://circleci.com/api/v2/project/github/' + element.user + '/' + github.name + '/pipeline',
-            json: {
-              tag: 'v' + next_version,
-              parameters: {
-                run_build: true,
-                version: 'v' + next_version.replace(/\./g, '-'),
-              }
-            },
-            auth: {
-              user: element.token.circleci,
-              password: ''
-            }
-          }, (error, response, _) => {
-            if (error) {
-              reject(error)
-              return
-            }
-            console.log(response)
-            resolve()
-          })
-        })
-
-        promises([github_promise, circleci_promise, ref.update({version: next_version})])
+        promises([github_promise, ref.update({version: next_version})])
         return res.status(200).json({text: payload.actions[0].name + ' の v' + next_version + ' の Deploy を実行しています (*･ω･)ﾉ'})
       }
 
