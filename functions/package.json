@@ -12,19 +12,17 @@
   "engines": {
     "node": "10"
   },
+  "private": true,
   "dependencies": {
     "crypto": "^1.0.1",
-    "firebase-admin": "^8.9.2",
-    "firebase-functions": "^3.3.0",
+    "firebase-admin": "^8.12.1",
+    "firebase-functions": "^3.6.2",
     "request": "^2.88.2",
-    "slack": "^11.0.2",
-    "minimist": ">=1.2.2"
+    "slack": "^11.0.2"
   },
   "devDependencies": {
-    "eslint": "^5.12.0",
-    "eslint-plugin-promise": "^4.0.1",
-    "firebase-functions-test": "^0.1.6",
-    "minimist": ">=1.2.2"
-  },
-  "private": true
+    "eslint": "^7.2.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "firebase-functions-test": "^0.2.1"
+  }
 }
